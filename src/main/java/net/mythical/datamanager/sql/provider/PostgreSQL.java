@@ -45,16 +45,19 @@ public class PostgreSQL extends DataManager {
     }
 
     @Override
-    public void createDatabase(String tableName, List<String> column){
-        new BukkitRunnable(){
+    public void createTable(String tableName, List<String> column){
+        createTableSQL(tableName, column, hikari);
+    }
 
+    public void executeUpdate(final String string) {
+        new BukkitRunnable() {
             @Override
             public void run() {
-                try(Connection connection = hikari.getConnection();
-                    Statement statement = connection.createStatement()) {
-                    statement.executeUpdate("CREATE TABLE IF NOT EXISTS" + tableName + " (" + String.join(",", column) +")");
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                try (Connection connection = hikari.getConnection();
+                     PreparedStatement preparedStatement = connection.prepareStatement(string)){
+                    preparedStatement.executeUpdate();
+                } catch (SQLException var2) {
+                    var2.printStackTrace();
                 }
             }
         }.runTaskAsynchronously(DataAPI.plugin);

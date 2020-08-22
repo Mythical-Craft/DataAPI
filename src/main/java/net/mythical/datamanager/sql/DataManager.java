@@ -1,14 +1,34 @@
 package net.mythical.datamanager.sql;
 
 
+import net.mythical.datamanager.DataAPI;
 import net.mythical.lib.com.zaxxer.hikari.HikariDataSource;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 public abstract class DataManager {
+
+    protected static void createTableSQL(String tableName, List<String> column, HikariDataSource hikari) {
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                try (Connection connection = hikari.getConnection();
+                     Statement statement = connection.createStatement()) {
+                    statement.executeUpdate("CREATE TABLE IF NOT EXISTS" + tableName + " (" + String.join(",", column) + ")");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.runTaskAsynchronously(DataAPI.plugin);
+    }
 
     public abstract void init();
 
@@ -28,9 +48,11 @@ public abstract class DataManager {
 
     public abstract void setUsername(String username);
 
+    public abstract void executeUpdate(final String string);
+
     public abstract void query(String sqlQuery, Consumer<ResultSet> consumer);
 
-    public abstract void createDatabase(String tableName, List<String> column);
+    public abstract void createTable(String tableName, List<String> column);
 
     public abstract boolean isUseDefaultProperty();
 
