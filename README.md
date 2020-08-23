@@ -10,20 +10,20 @@ class Example{
     private DataManager dataManager;
     
     private void startDB(){
-        DataAPI.postgreSQL.setJdbcUrl("jdbc:postgresql://127.0.0.1:5432/public");
-        DataAPI.postgreSQL.setUsername("postgres");
-        DataAPI.postgreSQL.setPassword("password");
-        DataAPI.postgreSQL.useDefaultProperty(true);
-        DataAPI.postgreSQL.init();
+        DataAPI.PostgreSQL().setJdbcUrl("jdbc:postgresql://127.0.0.1:5432/public");
+        DataAPI.PostgreSQL().setUsername("postgres");
+        DataAPI.PostgreSQL().setPassword("password");
+        DataAPI.PostgreSQL().useDefaultProperty(true);
+        DataAPI.PostgreSQL().init();
     }
 
     private void createDatabase(){
         List<String> column = Arrays.asList("uuid VARCHAR(36), username VARCHAR(32)");
-        DataAPI.postgreSQL.createDatabase("user_data", column);
+        DataAPI.PostgreSQL().createDatabase("user_data", column);
     }
 
     private void query(){
-        DataAPI.postgreSQL.query("SELECT * FROM public.data WHERE uuid='fc249539-54a7-48b7-809e-085bb6901465'", resultSet -> {
+        DataAPI.PostgreSQL().query("SELECT * FROM public.data WHERE uuid='fc249539-54a7-48b7-809e-085bb6901465'", resultSet -> {
             try {
                 while (resultSet.next()){
                     resultSet.getString("username");
@@ -35,7 +35,7 @@ class Example{
     }
 
     private void update(){
-        DataAPI.postgreSQL.execute("");
+        DataAPI.PostgreSQL().execute("UPDATE...");
     }
 
 }
