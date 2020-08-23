@@ -2,7 +2,7 @@
 
 
 
-##How to use
+## How to use
 ```java
 
 class Example{
@@ -33,10 +33,15 @@ class Example{
             }
         });
     }
+
+    private void update(){
+        DataAPI.postgreSQL.execute("");
+    }
+
 }
 ```
 
-##License
+## License
 
 ```text
                     GNU AFFERO GENERAL PUBLIC LICENSE

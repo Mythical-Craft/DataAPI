@@ -30,6 +30,21 @@ public abstract class DataManager {
         }.runTaskAsynchronously(DataAPI.plugin);
     }
 
+    protected static void executeSQL(final String string, HikariDataSource hikari){
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                try (Connection connection = hikari.getConnection();
+                     Statement statement = connection.createStatement()){
+                    statement.execute(string);
+                } catch (SQLException e){
+                    e.printStackTrace();
+                }
+            }
+        }.runTaskAsynchronously(DataAPI.plugin);
+    }
+
     public abstract void init();
 
     public abstract void setJdbcUrl(String jdbcUrl);
@@ -48,7 +63,9 @@ public abstract class DataManager {
 
     public abstract void setUsername(String username);
 
-    public abstract void executeUpdate(final String string);
+    public abstract void close();
+
+    public abstract void execute(final String string);
 
     public abstract void query(String sqlQuery, Consumer<ResultSet> consumer);
 

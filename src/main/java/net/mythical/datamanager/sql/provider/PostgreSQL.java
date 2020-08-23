@@ -2,13 +2,16 @@ package net.mythical.datamanager.sql.provider;
 
 import net.mythical.datamanager.DataAPI;
 import net.mythical.datamanager.sql.DataManager;
+import net.mythical.lib.com.zaxxer.hikari.HikariConfig;
 import net.mythical.lib.com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.function.Consumer;
 
 public class PostgreSQL extends DataManager {
@@ -44,23 +47,31 @@ public class PostgreSQL extends DataManager {
         }
     }
 
+    /**
+     *
+     * @param file Properties File (look example.properties)
+     */
+    public void init(File file){
+        hikari = new HikariDataSource(new HikariConfig(file.getPath()));
+    }
+
+    /**
+     *
+     * @param properties using java.util.Properties
+     */
+    public void init (Properties properties){
+        hikari = new HikariDataSource(new HikariConfig(properties));
+    }
+
+
     @Override
     public void createTable(String tableName, List<String> column){
         createTableSQL(tableName, column, hikari);
     }
 
-    public void executeUpdate(final String string) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                try (Connection connection = hikari.getConnection();
-                     PreparedStatement preparedStatement = connection.prepareStatement(string)){
-                    preparedStatement.executeUpdate();
-                } catch (SQLException var2) {
-                    var2.printStackTrace();
-                }
-            }
-        }.runTaskAsynchronously(DataAPI.plugin);
+    @Override
+    public void execute(final String string) {
+        executeSQL(string, hikari);
     }
 
     @Override
@@ -115,6 +126,11 @@ public class PostgreSQL extends DataManager {
     @Override
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public void close() {
+        hikari.close();
     }
 
     @Override

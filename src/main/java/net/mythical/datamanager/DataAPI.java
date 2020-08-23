@@ -7,8 +7,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class DataAPI extends JavaPlugin {
 
-    public static DataManager postgreSQL = new PostgreSQL();
-    public static MySQL MySQL = new MySQL();
+    public DataManager postgre = new PostgreSQL();
+    public MySQL mysql = new MySQL();
+
     public static DataAPI plugin;
 
     @Override
@@ -24,5 +25,13 @@ public class DataAPI extends JavaPlugin {
     @Override
     public void onDisable() {
         super.onDisable();
+    }
+
+    public static MySQL MySQL() {
+        return plugin.mysql;
+    }
+
+    public static DataManager PostgreSQL() {
+        return plugin.postgre;
     }
 }

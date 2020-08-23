@@ -49,18 +49,8 @@ public class MySQL extends DataManager {
     }
 
 
-    public void executeUpdate(final String string) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                try (Connection connection = hikari.getConnection();
-                     PreparedStatement preparedStatement = connection.prepareStatement(string)){
-                    preparedStatement.executeUpdate();
-                } catch (SQLException var2) {
-                    var2.printStackTrace();
-                }
-            }
-        }.runTaskAsynchronously(DataAPI.plugin);
+    public void execute(final String string) {
+        executeSQL(string, hikari);
     }
 
     @Override
@@ -115,6 +105,11 @@ public class MySQL extends DataManager {
     @Override
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public void close() {
+        hikari.close();
     }
 
     @Override
