@@ -1,14 +1,13 @@
 package net.mythical.datamanager.sql.provider;
 
-import net.mythical.datamanager.DataAPI;
 import net.mythical.datamanager.sql.DataManager;
 import net.mythical.lib.com.zaxxer.hikari.HikariDataSource;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class MySQL extends DataManager {
@@ -55,17 +54,14 @@ public class MySQL extends DataManager {
 
     @Override
     public void query(String sqlQuery, Consumer<ResultSet> consumer){
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                try(Connection connection = hikari.getConnection();
-                    Statement statement = connection.createStatement()){
-                    consumer.accept(statement.executeQuery(sqlQuery));
-                } catch (SQLException e){
-                    e.printStackTrace();
-                }
+        CompletableFuture.runAsync(() -> {
+            try(Connection connection = hikari.getConnection();
+                Statement statement = connection.createStatement()){
+                consumer.accept(statement.executeQuery(sqlQuery));
+            } catch (SQLException e){
+                e.printStackTrace();
             }
-        }.runTaskAsynchronously(DataAPI.plugin);
+        });
     }
 
     public void setHikari(HikariDataSource hikari) {
